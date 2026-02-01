@@ -27,3 +27,4 @@ coverage/
 
 # Workgraph agent output
 .workgraph/agents/
+.vercel

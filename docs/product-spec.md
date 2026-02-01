@@ -23,7 +23,7 @@ Capture knowledge that would otherwise be lost - insights from conversations, pa
 |----------|----------|-----------------|
 | Personal knowledge | Recipes, preferences, travel, life learnings | Private, single-user, lifestyle content |
 | Development learnings | Architecture patterns, debugging insights, codebase knowledge | Technical, cross-project |
-| Organizational wikis | Company knowledge, processes, decisions (Synthyra, LFW, Navicyte) | Multi-tenant, team-oriented |
+| Organizational wikis | Company knowledge, processes, decisions (Company A, Company B, Company C) | Multi-tenant, team-oriented |
 | Operational insights | Sales patterns, meeting extractions, research summaries | Event-driven, business process |
 
 ---
@@ -117,7 +117,7 @@ Model-agnostic extraction pipeline using reasoning-capable LLMs:
 ### Core Schema
 
 ```sql
--- Tenants (personal, synthyra, lfw, navicyte, etc.)
+-- Tenants (personal, acme-corp, startup-x, company-y, etc.)
 CREATE TABLE tenants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     slug VARCHAR(100) UNIQUE NOT NULL,
@@ -632,8 +632,8 @@ Focus on insights that would be useful to retrieve later.
 
 ```json
 {
-    "slug": "synthyra",
-    "name": "Synthyra",
+    "slug": "acme-corp",
+    "name": "Acme Corp",
     "settings": {
         "default_model": "claude-sonnet-4-20250514",
         "auto_link_threshold": 0.75,
@@ -648,9 +648,9 @@ Focus on insights that would be useful to retrieve later.
 | Tenant | Purpose | Namespaces |
 |--------|---------|------------|
 | `personal` | Braydon's personal knowledge | recipes, travel, preferences, learnings |
-| `synthyra` | Synthyra company wiki | architecture, processes, decisions, people |
-| `lfw` | LFW company wiki | projects, clients, practices |
-| `navicyte` | Navicyte company wiki | product, engineering, research |
+| `acme-corp` | Acme Corp company wiki | architecture, processes, decisions, people |
+| `startup-x` | Startup X company wiki | projects, clients, practices |
+| `company-y` | Company Y company wiki | product, engineering, research |
 | `dev-learnings` | Cross-project development insights | patterns, debugging, tools, architectures |
 
 ---

@@ -5,7 +5,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "vector";
 
--- Tenants (personal, synthyra, lfw, navicyte, etc.)
+-- Tenants (personal, company-a, company-b, etc.)
 CREATE TABLE tenants (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     slug VARCHAR(100) UNIQUE NOT NULL,
