@@ -1,4 +1,5 @@
 import pg from 'pg';
+import { neon, neonConfig } from '@neondatabase/serverless';
 
 const { Pool } = pg;
 
@@ -7,6 +8,12 @@ export type DbClient = pg.PoolClient;
 export type QueryResult<T extends pg.QueryResultRow> = pg.QueryResult<T>;
 
 let pool: pg.Pool | null = null;
+let neonSql: ReturnType<typeof neon> | null = null;
+
+// Detect if we're using Neon (serverless) or local PostgreSQL
+function isNeonConnection(url: string): boolean {
+  return url.includes('neon.tech') || url.includes('neon.database');
+}
 
 export function getDb(): pg.Pool {
   if (!pool) {
@@ -14,11 +21,16 @@ export function getDb(): pg.Pool {
     if (!connectionString) {
       throw new Error('DATABASE_URL environment variable is required');
     }
+
+    // For Neon in serverless, we still use pg Pool but with SSL
+    const isNeon = isNeonConnection(connectionString);
+
     pool = new Pool({
       connectionString,
-      max: 20,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
+      max: isNeon ? 1 : 20, // Neon handles pooling server-side
+      idleTimeoutMillis: isNeon ? 0 : 30000,
+      connectionTimeoutMillis: 5000,
+      ssl: isNeon ? { rejectUnauthorized: false } : undefined,
     });
 
     pool.on('error', (err) => {
@@ -26,6 +38,19 @@ export function getDb(): pg.Pool {
     });
   }
   return pool;
+}
+
+// Get Neon serverless SQL function (for edge/serverless contexts)
+export function getNeonSql() {
+  if (!neonSql) {
+    const connectionString = process.env['DATABASE_URL'];
+    if (!connectionString) {
+      throw new Error('DATABASE_URL environment variable is required');
+    }
+    neonConfig.fetchConnectionCache = true;
+    neonSql = neon(connectionString);
+  }
+  return neonSql;
 }
 
 export async function closeDb(): Promise<void> {
