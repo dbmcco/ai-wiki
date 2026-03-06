@@ -94,6 +94,23 @@ npm run dev
 5. Add env vars: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`
 6. Run migrations against Neon URL
 
+## Speedrift Agent Control
+
+If this repo is being worked through the Speedrift ecosystem:
+
+- Workgraph is the task source of truth.
+- `speedriftd` is the repo-local runtime supervisor.
+- Default repo posture is `observe`; do not use `wg service start` as the generic way to arm background work.
+- Start agent sessions through the repo handlers:
+  - Codex: `./.workgraph/handlers/session-start.sh --cli codex`
+  - Claude Code: `./.workgraph/handlers/session-start.sh --cli claude-code`
+- Refresh runtime state before acting: `driftdriver --dir "$PWD" --json speedriftd status --refresh`
+- Arm the repo explicitly when requested:
+  - `driftdriver --dir "$PWD" speedriftd status --set-mode supervise --lease-owner <agent-name> --reason "explicit repo supervision requested"`
+  - `driftdriver --dir "$PWD" speedriftd status --set-mode autonomous --lease-owner <agent-name> --reason "explicit autonomous execution requested"`
+- Return the repo to passive mode when done:
+  - `driftdriver --dir "$PWD" speedriftd status --set-mode observe --release-lease --reason "return repo to observation"`
+
 ## MCP Integration
 
 Add to your Claude Code config (`~/.claude/mcp.json`):
